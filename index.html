@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>附近美食地圖</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+</head>
+
+<body>
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" class="modal">
+        <div class="modal-content">
+            <h2>歡迎使用美食地圖</h2>
+            <p>請輸入您的 Google Maps API Key 以開始使用</p>
+            <div class="input-group">
+                <input type="text" id="apiKeyInput" placeholder="貼上您的 API Key">
+                <button id="submitApiKey">開始探索</button>
+            </div>
+            <p class="hint">您的 Key 僅會儲存在瀏覽器記憶體中，不會上傳到任何伺服器。</p>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Header / Search Bar -->
+        <header class="glass-panel">
+            <div class="search-container">
+                <span class="material-icons-round search-icon">search</span>
+                <input type="text" id="searchInput" placeholder="搜尋附近美食...">
+                <button id="searchBtn" class="search-btn">搜尋</button>
+            </div>
+            <div class="categories-scroll">
+                <button class="category-chip active" data-type="">全部</button>
+                <button class="category-chip" data-type="breakfast">早餐</button>
+                <button class="category-chip" data-type="lunch_cheap">午餐 (平價)</button>
+                <button class="category-chip" data-type="lunch_expensive">午餐 (高級)</button>
+                <button class="category-chip" data-type="restaurant">餐廳</button>
+                <button class="category-chip" data-type="drinks">飲料</button>
+            </div>
+        </header>
+
+        <!-- Map Container -->
+        <div id="map"></div>
+
+        <!-- List View (Bottom Sheet on Mobile, Sidebar on Desktop) -->
+        <div class="places-panel glass-panel">
+            <div class="panel-handle"></div>
+            <div class="places-header">
+                <h3>附近地點</h3>
+                <div class="header-right">
+                    <span id="placesCount">0 個結果</span>
+                    <button id="collapseBtn" class="collapse-btn">
+                        <span class="material-icons-round">expand_more</span>
+                    </button>
+                </div>
+            </div>
+            <div class="sort-buttons">
+                <button id="randomBtn" class="sort-btn random-btn">
+                    <span class="material-icons-round">casino</span>隨機
+                </button>
+                <button class="sort-btn active" data-sort="default">
+                    <span class="material-icons-round">sort</span>預設
+                </button>
+                <button class="sort-btn" data-sort="price">
+                    <span class="material-icons-round">attach_money</span>價格
+                </button>
+                <button class="sort-btn" data-sort="distance">
+                    <span class="material-icons-round">near_me</span>距離
+                </button>
+                <button class="sort-btn" data-sort="rating">
+                    <span class="material-icons-round">star</span>評分
+                </button>
+            </div>
+            <div id="placesList" class="places-list">
+                <!-- Places will be injected here -->
+                <div class="loading-state">
+                    <span class="material-icons-round spin">sync</span>
+                    <p>正在定位中...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Location Button -->
+        <button id="myLocationBtn" class="fab glass-panel">
+            <span class="material-icons-round">my_location</span>
+        </button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
