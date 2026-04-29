@@ -4,55 +4,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>附近美食地圖</title>
+    <title>中華電信總公司附近美食地圖</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 </head>
 
 <body>
-    <!-- API Key Modal -->
-    <div id="apiKeyModal" class="modal">
-        <div class="modal-content">
-            <h2>歡迎使用美食地圖</h2>
-            <p>請輸入您的 Google Maps API Key 以開始使用</p>
-            <div class="input-group">
-                <input type="text" id="apiKeyInput" placeholder="貼上您的 API Key">
-                <button id="submitApiKey">開始探索</button>
-            </div>
-            <p class="hint">您的 Key 僅會儲存在瀏覽器記憶體中，不會上傳到任何伺服器。</p>
-        </div>
-    </div>
-
     <div class="app-container">
-        <!-- Header / Search Bar -->
+        <!-- Header -->
         <header class="glass-panel">
             <div class="search-container">
                 <span class="material-icons-round search-icon">search</span>
-                <input type="text" id="searchInput" placeholder="搜尋附近美食...">
-                <button id="searchBtn" class="search-btn">搜尋</button>
+                <input type="text" id="searchInput" placeholder="店名／類型篩選…">
+                <button id="clearSearchBtn" class="search-btn" title="清除">清除</button>
             </div>
-            <div class="categories-scroll">
-                <button class="category-chip active" data-type="">全部</button>
-                <button class="category-chip" data-type="breakfast">早餐</button>
-                <button class="category-chip" data-type="lunch_cheap">午餐 (平價)</button>
-                <button class="category-chip" data-type="lunch_expensive">午餐 (高級)</button>
-                <button class="category-chip" data-type="restaurant">餐廳</button>
-                <button class="category-chip" data-type="drinks">飲料</button>
+
+            <!-- 時段 -->
+            <div class="filter-row">
+                <span class="filter-label">時段</span>
+                <div class="chip-group" id="mealChips">
+                    <button class="chip active" data-meal="now">現在</button>
+                    <button class="chip" data-meal="breakfast">早餐</button>
+                    <button class="chip" data-meal="lunch">午餐</button>
+                    <button class="chip" data-meal="dinner">晚餐</button>
+                    <button class="chip" data-meal="any">全部</button>
+                </div>
+            </div>
+
+            <!-- 價位 -->
+            <div class="filter-row">
+                <span class="filter-label">價位</span>
+                <div class="chip-group" id="priceChips">
+                    <button class="chip active" data-price="any">全部</button>
+                    <button class="chip" data-price="under_200">200 以下</button>
+                    <button class="chip" data-price="other">其他</button>
+                </div>
+                <label class="open-now-toggle">
+                    <input type="checkbox" id="openNowCheckbox">
+                    <span>現在營業中</span>
+                </label>
+            </div>
+
+            <!-- 類別（多選；預設：餐飲；便利商店要點才顯示） -->
+            <div class="filter-row">
+                <span class="filter-label">類別</span>
+                <div class="chip-group multi" id="categoryChips">
+                    <button class="chip active" data-category="restaurant">餐廳</button>
+                    <button class="chip active" data-category="fast_food">小吃</button>
+                    <button class="chip active" data-category="cafe">咖啡</button>
+                    <button class="chip active" data-category="bakery">烘焙</button>
+                    <button class="chip active" data-category="beverage">飲料</button>
+                    <button class="chip active" data-category="ice_cream">冰品</button>
+                    <button class="chip active" data-category="bar">酒吧</button>
+                    <button class="chip active" data-category="food_court">美食街</button>
+                    <button class="chip" data-category="convenience">便利商店</button>
+                    <button class="chip" data-category="market">市場</button>
+                    <button class="chip" data-category="other">其他</button>
+                </div>
             </div>
         </header>
 
-        <!-- Map Container -->
+        <!-- Map -->
         <div id="map"></div>
 
-        <!-- List View (Bottom Sheet on Mobile, Sidebar on Desktop) -->
+        <!-- 列表 -->
         <div class="places-panel glass-panel">
             <div class="panel-handle"></div>
             <div class="places-header">
-                <h3>附近地點</h3>
+                <h3>附近店家</h3>
                 <div class="header-right">
                     <span id="placesCount">0 個結果</span>
-                    <button id="collapseBtn" class="collapse-btn">
+                    <button id="collapseBtn" class="collapse-btn" title="收起／展開">
                         <span class="material-icons-round">expand_more</span>
                     </button>
                 </div>
@@ -61,34 +88,30 @@
                 <button id="randomBtn" class="sort-btn random-btn">
                     <span class="material-icons-round">casino</span>隨機
                 </button>
-                <button class="sort-btn active" data-sort="default">
-                    <span class="material-icons-round">sort</span>預設
-                </button>
-                <button class="sort-btn" data-sort="price">
-                    <span class="material-icons-round">attach_money</span>價格
-                </button>
-                <button class="sort-btn" data-sort="distance">
+                <button class="sort-btn active" data-sort="distance">
                     <span class="material-icons-round">near_me</span>距離
                 </button>
-                <button class="sort-btn" data-sort="rating">
-                    <span class="material-icons-round">star</span>評分
+                <button class="sort-btn" data-sort="name">
+                    <span class="material-icons-round">sort_by_alpha</span>名稱
                 </button>
             </div>
             <div id="placesList" class="places-list">
-                <!-- Places will be injected here -->
                 <div class="loading-state">
                     <span class="material-icons-round spin">sync</span>
-                    <p>正在定位中...</p>
+                    <p>載入中…</p>
                 </div>
             </div>
         </div>
 
-        <!-- Current Location Button -->
-        <button id="myLocationBtn" class="fab glass-panel">
-            <span class="material-icons-round">my_location</span>
+        <!-- 回中心點 -->
+        <button id="recenterBtn" class="fab glass-panel" title="回到中華電信總公司">
+            <span class="material-icons-round">location_searching</span>
         </button>
     </div>
 
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
     <script src="app.js"></script>
 </body>
 

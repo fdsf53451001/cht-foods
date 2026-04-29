@@ -1,0 +1,11 @@
+{
+  "_readme": "用法：把 Overpass 抓出來的 places.json 看一輪，發現分類錯的就在 by_id 加一筆覆蓋。key 是 places.json 中的 id（如 node/12345），value 是要覆蓋的欄位。執行 fetch-places script 時會自動套用。",
+  "_example": {
+    "node/0000000": {
+      "price_tier": "under_200",
+      "meal_times": ["breakfast", "lunch"],
+      "name": "（更正後的店名）"
+    }
+  },
+  "by_id": {}
+}

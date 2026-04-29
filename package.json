@@ -1,0 +1,10 @@
+{
+  "name": "cht-foods",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "中華電信總公司附近美食地圖（OSM 資料）",
+  "scripts": {
+    "fetch-places": "node scripts/fetch-places.js"
+  }
+}
